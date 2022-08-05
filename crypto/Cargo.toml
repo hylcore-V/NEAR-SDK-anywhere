@@ -1,0 +1,22 @@
+[package]
+name = "near-anywhere-crypto"
+version = "0.1.0"
+edition = "2021"
+authors = ["Russell Wong"]
+
+[dependencies]
+borsh = "0.9.3"
+bs58 = "0.4.0"
+derive_more = "0.99.17"
+ed25519-dalek = "1.0.1"
+libsecp256k1 = "0.7.1"
+primitive-types = "0.11.1"
+rand = { package = "rand", version = "0.8.5" }
+rand-07 = { package = "rand", version = "0.7.3" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1.0.31"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+rand-07 = { package = "rand", version = "0.7.3",features = ["wasm-bindgen"] }
+

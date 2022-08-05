@@ -1,0 +1,32 @@
+[package]
+name = "near-anywhere"
+version = "0.1.0"
+edition = "2021"
+authors = ["Russell Wong"]
+
+[dependencies]
+near-anywhere-primitives = { path = "../primitives" }
+
+borsh = "0.9.3"
+bs58 = "0.4.0"
+hashbrown = "0.12"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_derive = "1"
+thiserror = "1.0.31"
+url = "2.2.2"
+sha2 = "0.10.2"
+reqwest = "0.11.11"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+js-sys = "0.3.59"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
+version = "0.3.58"
+features = ["Window", "Storage", "Location", "Document", "History"]
+
+[features]
+default = ["local_storage"]
+local_storage = []

@@ -1,0 +1,24 @@
+[tasks.format]
+install_crate = "rustfmt"
+toolchain = "nightly"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+
+[tasks.build]
+command = "cargo"
+args = ["build"]
+dependencies = ["format"]
+
+[tasks.build-wasm]
+command = "cargo"
+args = ["build", "--target=wasm32-unknown-unknown"]
+dependencies = ["format"]
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
+dependencies = ["build"]
