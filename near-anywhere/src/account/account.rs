@@ -38,7 +38,7 @@ use {
     hashbrown::HashMap,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Account {
     near_rpc_user: NearRpcUser,
     connection: Connection,
@@ -116,25 +116,26 @@ impl Account {
         let key = public_key.to_string();
         let cached_access_key = self.access_key_by_public_key_cache.get(&key);
 
-        if let Some(access_key) = cached_access_key {
-            Ok(AccessKeyInfoView {
+        match cached_access_key {
+            Some(access_key) => Ok(AccessKeyInfoView {
                 public_key,
                 access_key: access_key.clone().into(),
-            })
-        } else {
-            let access_key_view = self
-                .near_rpc_user
-                .view_access_key(&account_id, &public_key)
-                .await
-                .unwrap();
+            }),
+            None => {
+                let access_key_view = self
+                    .near_rpc_user
+                    .view_access_key(&account_id, &public_key)
+                    .await
+                    .unwrap();
 
-            self.access_key_by_public_key_cache
-                .insert(public_key.to_string(), access_key_view.clone());
+                self.access_key_by_public_key_cache
+                    .insert(public_key.to_string(), access_key_view.clone());
 
-            Ok(AccessKeyInfoView {
-                public_key,
-                access_key: access_key_view,
-            })
+                Ok(AccessKeyInfoView {
+                    public_key,
+                    access_key: access_key_view,
+                })
+            }
         }
     }
 
@@ -143,7 +144,7 @@ impl Account {
         receiver_id: &str,
         actions: Vec<Action>,
     ) -> Result<AccessKeyInfoView, RpcError> {
-        unimplemented!()
+        self.find_access_key().await
     }
 
     pub async fn create_and_deploy_contract(

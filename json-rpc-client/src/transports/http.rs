@@ -1,6 +1,6 @@
 use crate::{RpcError, RpcRequest, RpcResponse};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Http {
     client: reqwest::Client,
     headers: reqwest::header::HeaderMap,
@@ -38,5 +38,11 @@ impl Http {
             Ok(response) => Ok(response),
             Err(_) => Err(serde_json::from_value::<RpcError>(response).unwrap()),
         }
+    }
+}
+
+impl PartialEq for Http {
+    fn eq(&self, other: &Self) -> bool {
+        (&self.url, &self.url) == (&other.url, &other.url)
     }
 }

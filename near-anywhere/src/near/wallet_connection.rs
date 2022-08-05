@@ -7,8 +7,10 @@ use {
         key_store::KeyStore,
         primitives::{transaction::Transaction, types::AccountId},
         serialize::to_base64,
+        signer::Signer,
     },
     borsh::BorshSerialize,
+    log::info,
     std::collections::HashMap,
     url::Url,
 };
@@ -18,7 +20,7 @@ const MULTISIG_HAS_METHOD: &str = "add_request_and_confirm";
 const LOCAL_STORAGE_KEY_SUFFIX: &str = "_wallet_auth_key";
 const PENDING_ACCESS_KEY_PREFIX: &str = "pending_key";
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct WalletConnection {
     auth_data_key: String,
     near: Near,
@@ -57,11 +59,15 @@ impl WalletConnection {
             #[cfg(not(target_arch = "wasm32"))]
             None
         };
+        let key_store = match near.connection.signer.clone() {
+            Signer::InMemorySigner(signer) => signer.key_store,
+            _ => KeyStore::new(),
+        };
 
         Self {
             near,
             wallet_base_url,
-            key_store: KeyStore::new(),
+            key_store,
             auth_data_key,
             auth_data,
             network_id,
@@ -76,8 +82,19 @@ impl WalletConnection {
         }
     }
 
-    pub fn account(&self) -> Option<Account> {
-        self.connected_account.clone()
+    pub fn account(&mut self) -> Option<Account> {
+        match (self.connected_account.clone(), self.auth_data.clone()) {
+            (Some(account), _) => Some(account),
+            (_, Some(auth_data)) => {
+                let connection = self.near.connection.clone();
+                let account_id = auth_data.clone().account_id;
+                let account = Account::new(connection, account_id);
+
+                self.connected_account = Some(account);
+                self.connected_account.clone()
+            }
+            _ => None,
+        }
     }
 
     pub fn is_signed_in(&self) -> bool {
@@ -96,7 +113,7 @@ impl WalletConnection {
     }
 
     pub async fn request_sign_in(
-        &self,
+        &mut self,
         contract_id: Option<String>,
         method_names: Option<Vec<String>>,
         success_url: Option<String>,
@@ -123,16 +140,32 @@ impl WalletConnection {
             self.key_store.set_key(&network_id, &temp_key, key_pair);
         }
         if let Some(method_names) = method_names {
-            url.query_pairs_mut()
-                .append_pair("methodNames", &method_names.join(","));
+            for method_name in method_names {
+                url.query_pairs_mut()
+                    .append_pair("methodNames", &method_name);
+            }
         }
         if let Some(success_url) = success_url {
             url.query_pairs_mut()
                 .append_pair("success_url", &success_url);
+        } else {
+            #[cfg(all(target_arch = "wasm32", feature = "local_storage"))]
+            {
+                let current_url = crate::browser::current_url();
+                url.query_pairs_mut()
+                    .append_pair("success_url", &current_url);
+            }
         }
         if let Some(failure_url) = failure_url {
             url.query_pairs_mut()
                 .append_pair("failure_url", &failure_url);
+        } else {
+            #[cfg(all(target_arch = "wasm32", feature = "local_storage"))]
+            {
+                let current_url = crate::browser::current_url();
+                url.query_pairs_mut()
+                    .append_pair("failure_url", &current_url);
+            }
         }
 
         let url = url.to_string();

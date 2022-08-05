@@ -1,6 +1,6 @@
 use {crate::primitives::types::AccountId, std::collections::HashMap};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct AuthData {
     pub account_id: AccountId,
     pub all_keys: Vec<String>,

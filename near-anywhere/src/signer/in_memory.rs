@@ -8,9 +8,9 @@ use {
     std::io::{Error, ErrorKind},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct InMemorySigner {
-    key_store: KeyStore,
+    pub key_store: KeyStore,
 }
 
 impl InMemorySigner {
@@ -23,7 +23,7 @@ impl InMemorySigner {
     pub fn create_key(&self, account_id: &str, network_id: &str) -> PublicKey {
         let key_pair = KeyPair::from_random(KeyType::ED25519);
         let public_key = key_pair.public_key();
-        self.key_store.set_key(account_id, network_id, key_pair);
+        self.key_store.set_key(network_id, account_id, key_pair);
 
         public_key
     }
@@ -37,7 +37,7 @@ impl InMemorySigner {
     }
 
     pub fn get_public_key(&self, account_id: &str, network_id: &str) -> Result<PublicKey, Error> {
-        let key_pair = self.key_store.get_key(account_id, network_id);
+        let key_pair = self.key_store.get_key(network_id, account_id);
 
         match key_pair {
             Some(key_pair) => Ok(key_pair.public_key()),
@@ -53,7 +53,7 @@ impl InMemorySigner {
         let hash = hash.as_slice();
         let key_pair = self
             .key_store
-            .get_key(account_id, network_id)
+            .get_key(network_id, account_id)
             .expect("keypair not found");
 
         key_pair.sign(hash)

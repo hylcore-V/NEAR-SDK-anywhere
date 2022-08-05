@@ -4,7 +4,7 @@ use {
     web_sys::Storage,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BrowserLocalStorageKeyStore {
     storage: Storage,
 }

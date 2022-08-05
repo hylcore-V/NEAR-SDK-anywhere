@@ -7,7 +7,7 @@ use {
     std::io::Error,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Signer {
     InMemorySigner(InMemorySigner),
 }

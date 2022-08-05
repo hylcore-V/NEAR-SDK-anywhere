@@ -24,7 +24,7 @@ use {
     },
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NearRpcClient(RpcClient);
 
 impl NearRpcClient {

@@ -2,7 +2,7 @@
 use super::BrowserLocalStorageKeyStore;
 use {super::InMemoryKeyStore, crate::key_pair::KeyPair};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum KeyStore {
     /// A keystore that stores keys in a local storage.
     #[cfg(all(target_arch = "wasm32", feature = "local_storage"))]

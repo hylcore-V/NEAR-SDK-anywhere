@@ -21,7 +21,7 @@ use {
     near_primitives_core::hash::CryptoHash,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NearRpcUser {
     client: NearRpcClient,
 }

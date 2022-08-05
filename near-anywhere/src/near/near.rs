@@ -3,7 +3,7 @@ use {
     crate::account::Account,
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Near {
     pub config: NearConfig,
     pub connection: Connection,

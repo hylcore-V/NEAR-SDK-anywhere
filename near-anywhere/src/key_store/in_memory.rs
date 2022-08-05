@@ -1,6 +1,6 @@
 use {super::storage_key_for_secret_key, crate::key_pair::KeyPair, hashbrown::HashMap};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct InMemoryKeyStore {
     storage: HashMap<String, String>,
 }

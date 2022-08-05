@@ -1,6 +1,6 @@
 use crate::{RpcError, RpcRequest, RpcResponse, Transport};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RpcClient {
     transport: Transport,
 }

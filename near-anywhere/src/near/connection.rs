@@ -3,7 +3,7 @@ use {
     crate::{client::Transport, signer::Signer},
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Connection {
     pub network_id: String,
     pub signer: Signer,

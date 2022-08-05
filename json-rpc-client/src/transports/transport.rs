@@ -1,6 +1,6 @@
 use crate::{Http, RpcError, RpcRequest, RpcResponse};
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Transport {
     Http(Http),
 }

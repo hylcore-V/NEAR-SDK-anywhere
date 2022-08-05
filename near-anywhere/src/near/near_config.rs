@@ -3,7 +3,7 @@ use {
     hashbrown::HashMap,
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct NearConfig {
     pub explorer_url: Option<String>,
     pub headers: HashMap<String, String>,
